@@ -1,2 +1,327 @@
-<!doctype html><html><head><meta charset="utf-8"><title>Painel</title></head>
-<body><p>Painel em preparação — rode o robô para gerar o conteúdo.</p></body></html>
+<!doctype html><html><head><meta charset=utf8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Furo x Recuperado - ASC #284</title>
+<style>
+:root{
+  --bg:#F7F8F5; --surface:#FFFFFF; --surface-2:#F0F2ED;
+  --ink:#16201B; --ink-2:#52584E; --muted:#8B9086;
+  --border:rgba(15,25,17,0.10); --border-strong:rgba(15,25,17,0.16);
+  --accent:#0F6B4E; --accent-soft:#E4F1EA;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a;
+  --shadow: 0 1px 2px rgba(15,25,17,0.06), 0 6px 20px rgba(15,25,17,0.05);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1411; --surface:#171D19; --surface-2:#1E251F;
+    --ink:#F2F4EF; --ink-2:#C3C8BD; --muted:#7C8378;
+    --border:rgba(255,255,255,0.08); --border-strong:rgba(255,255,255,0.14);
+    --accent:#35B98A; --accent-soft:#173327;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    color-scheme: dark;
+  }
+}
+*{box-sizing:border-box;}
+body{background:var(--bg); color:var(--ink); font-family:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif; margin:0; padding:16px 16px 32px;}
+.wrap{max-width:1100px; margin:0 auto;}
+h1{font-size:1.2rem; font-weight:800; margin:0 0 2px;}
+.sub{font-size:0.8rem; color:var(--muted); margin-bottom:16px;}
+.kpi-row{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;}
+.kpi{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 16px; box-shadow:var(--shadow); flex:1; min-width:180px;}
+.kpi .lbl{font-size:0.68rem; text-transform:uppercase; letter-spacing:0.02em; color:var(--muted); font-weight:700;}
+.kpi .val{font-family:"IBM Plex Mono",monospace; font-size:1.3rem; font-weight:800; color:var(--accent); margin-top:2px;}
+.card{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px 18px 12px; box-shadow:var(--shadow); margin-bottom:14px;}
+.card h2{font-size:0.95rem; font-weight:700; margin:0 0 2px;}
+.card .card-sub{font-size:0.74rem; color:var(--muted); margin-bottom:10px;}
+.chart-svg{width:100%; height:auto; display:block; overflow:visible;}
+.legend{display:flex; gap:14px; flex-wrap:wrap; margin-top:8px; font-size:0.74rem; color:var(--ink-2);}
+.legend .item{display:flex; align-items:center; gap:6px;}
+.legend .swatch{width:10px; height:10px; border-radius:3px; flex:none;}
+.axis-label{fill:var(--muted); font-size:9px; font-family:"IBM Plex Mono",monospace;}
+.gridline{stroke:var(--border); stroke-width:1;}
+.baseline{stroke:var(--border-strong); stroke-width:1;}
+.divider{stroke:var(--border-strong); stroke-width:1; stroke-dasharray:4 3;}
+table.pix{width:100%; border-collapse:collapse; font-size:0.8rem;}
+table.pix th{font-size:0.62rem; text-transform:uppercase; color:var(--muted); text-align:left; padding:4px 8px; border-bottom:1px solid var(--border-strong);}
+table.pix td{padding:5px 8px; border-bottom:1px solid var(--border);}
+table.pix td.val{text-align:right; font-family:"IBM Plex Mono",monospace;}
+table.pix tr.total td{font-weight:800; border-top:1px solid var(--border-strong); background:var(--surface-2);}
+.aviso{font-size:0.76rem; color:#c98500; margin-top:8px;}
+.chart-tooltip{position:fixed; z-index:1000; pointer-events:none; background:var(--surface); border:1px solid var(--border-strong); border-radius:8px; box-shadow:var(--shadow); padding:6px 10px; font-size:0.72rem; color:var(--ink); white-space:nowrap; line-height:1.35;}
+.chart-tooltip .tt-lbl{color:var(--muted); font-weight:700; font-size:0.6rem; text-transform:uppercase;}
+.chart-tooltip .tt-val{font-weight:800;}
+footer{margin-top:18px; font-size:0.7rem; color:var(--muted);}
+</style>
+</head><body>
+<div class="wrap">
+  <h1>Furo de Estoque x Recuperado</h1>
+  <div class="sub">ASC Comércio · Conta #284 · atualizado em 30/09/2026 15:32</div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="lbl">% Recuperado — ago/26</div><div class="val">46,1%</div></div>
+    <div class="kpi"><div class="lbl">% Recuperado — set/26 (parcial)</div><div class="val">93,2%</div></div>
+    <div class="kpi"><div class="lbl">Furo Bruto (set/26)</div><div class="val">R$ 6.390,68</div></div>
+    <div class="kpi"><div class="lbl">Recuperado (set/26)</div><div class="val">R$ 5.953,37</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Histórico mensal</h2>
+    <div class="card-sub" id="histSub"></div>
+    <svg class="chart-svg" id="chartHist" viewBox="0 0 900 320"></svg>
+    <div class="legend">
+      <span class="item"><span class="swatch" style="background:var(--s1)"></span>Furo Bruto</span>
+      <span class="item"><span class="swatch" style="background:var(--s2)"></span>Recuperado</span>
+      <span class="item"><span class="swatch" style="background:var(--s3)"></span>% Recuperado</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Mês em andamento</h2>
+    <div class="card-sub" id="curSub"></div>
+    <svg class="chart-svg" id="chartCur" viewBox="0 0 900 320"></svg>
+    <div class="legend">
+      <span class="item"><span class="swatch" style="background:var(--s1)"></span>Furo Bruto (dia)</span>
+      <span class="item"><span class="swatch" style="background:var(--s2)"></span>Recuperado (dia)</span>
+      <span class="item"><span class="swatch" style="background:var(--s3)"></span>Acumulado</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Recebimentos PIX — set/26</h2>
+    <div class="card-sub">Consultado em 30/09/2026 15:31</div>
+    <table class="pix">
+      <thead><tr><th>Nome</th><th style="text-align:right">Valor</th><th>Data</th></tr></thead>
+      <tbody id="pixBody"></tbody>
+      <tfoot><tr class="total"><td>Total</td><td class="val" id="pixTotal"></td><td></td></tr></tfoot>
+    </table>
+    <div class="aviso" id="pixAviso" hidden></div>
+  </div>
+
+  <footer>Gerado automaticamente pelo robô de atualização — dados Market4u (Inventários + Link de Pagamento) + planilha Controle de Custo.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var DATA = {"historico": [{"ym": "2024-01", "label": "jan/24", "furoBrutoTotal": 4577.62, "recuperadoTotal": 3895.05, "pctRecuperado": 0.8509}, {"ym": "2024-02", "label": "fev/24", "furoBrutoTotal": 3252.96, "recuperadoTotal": 2983.62, "pctRecuperado": 0.9172}, {"ym": "2024-03", "label": "mar/24", "furoBrutoTotal": 4262.69, "recuperadoTotal": 2285.47, "pctRecuperado": 0.5362}, {"ym": "2024-04", "label": "abr/24", "furoBrutoTotal": 3574.89, "recuperadoTotal": 3412.77, "pctRecuperado": 0.9547}, {"ym": "2024-05", "label": "mai/24", "furoBrutoTotal": 2678.6, "recuperadoTotal": 2002.37, "pctRecuperado": 0.7475}, {"ym": "2024-06", "label": "jun/24", "furoBrutoTotal": 4191.87, "recuperadoTotal": 3525.97, "pctRecuperado": 0.8411}, {"ym": "2024-07", "label": "jul/24", "furoBrutoTotal": 5007.17, "recuperadoTotal": 3313.89, "pctRecuperado": 0.6618}, {"ym": "2024-08", "label": "ago/24", "furoBrutoTotal": 6010.59, "recuperadoTotal": 4363.06, "pctRecuperado": 0.7259}, {"ym": "2024-09", "label": "set/24", "furoBrutoTotal": 6080.68, "recuperadoTotal": 3005.57, "pctRecuperado": 0.4943}, {"ym": "2024-10", "label": "out/24", "furoBrutoTotal": 7188.49, "recuperadoTotal": 3725.07, "pctRecuperado": 0.5182}, {"ym": "2024-11", "label": "nov/24", "furoBrutoTotal": 4234.04, "recuperadoTotal": 2520.35, "pctRecuperado": 0.5953}, {"ym": "2024-12", "label": "dez/24", "furoBrutoTotal": 7146.72, "recuperadoTotal": 2842.08, "pctRecuperado": 0.3977}, {"ym": "2025-01", "label": "jan/25", "furoBrutoTotal": 9204.2, "recuperadoTotal": 2770.98, "pctRecuperado": 0.3011}, {"ym": "2025-02", "label": "fev/25", "furoBrutoTotal": 8727.5, "recuperadoTotal": 3714.09, "pctRecuperado": 0.4256}, {"ym": "2025-03", "label": "mar/25", "furoBrutoTotal": 11950.5, "recuperadoTotal": 2546.54, "pctRecuperado": 0.2131}, {"ym": "2025-04", "label": "abr/25", "furoBrutoTotal": 9874.23, "recuperadoTotal": 5186.09, "pctRecuperado": 0.5252}, {"ym": "2025-05", "label": "mai/25", "furoBrutoTotal": 6382.04, "recuperadoTotal": 3901.07, "pctRecuperado": 0.6113}, {"ym": "2025-06", "label": "jun/25", "furoBrutoTotal": 6477.16, "recuperadoTotal": 4806.17, "pctRecuperado": 0.742}, {"ym": "2025-07", "label": "jul/25", "furoBrutoTotal": 6259.06, "recuperadoTotal": 1710.65, "pctRecuperado": 0.2733}, {"ym": "2025-08", "label": "ago/25", "furoBrutoTotal": 6370.69, "recuperadoTotal": 2601.24, "pctRecuperado": 0.4083}, {"ym": "2025-09", "label": "set/25", "furoBrutoTotal": 6723.16, "recuperadoTotal": 3477.15, "pctRecuperado": 0.5172}, {"ym": "2025-10", "label": "out/25", "furoBrutoTotal": 7920.5, "recuperadoTotal": 4733.81, "pctRecuperado": 0.5977}, {"ym": "2025-11", "label": "nov/25", "furoBrutoTotal": 8442.43, "recuperadoTotal": 4247.0, "pctRecuperado": 0.5031}, {"ym": "2025-12", "label": "dez/25", "furoBrutoTotal": 2294.99, "recuperadoTotal": 2422.19, "pctRecuperado": 1.0554}, {"ym": "2026-01", "label": "jan/26", "furoBrutoTotal": 14777.94, "recuperadoTotal": 3641.45, "pctRecuperado": 0.2464}, {"ym": "2026-02", "label": "fev/26", "furoBrutoTotal": 11572.07, "recuperadoTotal": 2993.15, "pctRecuperado": 0.2587}, {"ym": "2026-03", "label": "mar/26", "furoBrutoTotal": 10971.73, "recuperadoTotal": 5082.81, "pctRecuperado": 0.4633}, {"ym": "2026-04", "label": "abr/26", "furoBrutoTotal": 9760.08, "recuperadoTotal": 3700.2, "pctRecuperado": 0.3791}, {"ym": "2026-05", "label": "mai/26", "furoBrutoTotal": 9633.18, "recuperadoTotal": 3597.04, "pctRecuperado": 0.3734}, {"ym": "2026-06", "label": "jun/26", "furoBrutoTotal": 8610.54, "recuperadoTotal": 3817.73, "pctRecuperado": 0.4434}, {"ym": "2026-07", "label": "jul/26", "furoBrutoTotal": 10783.09, "recuperadoTotal": 2090.46, "pctRecuperado": 0.1939}, {"ym": "2026-08", "label": "ago/26", "furoBrutoTotal": 8303.56, "recuperadoTotal": 3829.49, "pctRecuperado": 0.4612}, {"ym": "2026-09", "label": "set/26 (parcial)", "furoBrutoTotal": 6390.68, "recuperadoTotal": 5953.37, "pctRecuperado": 0.931570662276941}], "mesAtual": {"ym": "2026-09", "label": "set/26", "diasNoMes": 30, "throughDay": 30, "dailyFuroBruto": {"29": -593.36, "28": 0.0, "25": 684.71, "24": 1141.67, "23": 382.77, "22": -17.6, "21": 0.0, "20": 36.12, "18": 224.52, "17": 908.08, "16": 430.44, "15": 0.0, "14": -6.01, "11": 1201.58, "10": 244.47, "9": 508.75, "8": 6.37, "7": 6.41, "5": 545.33, "3": 686.43, "2": 0.0, "1": 0.0}, "dailyRecuperado": {"10": 60.84, "12": 41.29, "8": 30.96, "11": 363.61, "13": 6.78, "2": 337.21, "1": 1461.88, "20": 47.75, "5": 115.32, "9": 89.9, "16": 19.17, "18": 545.88, "25": 590.73, "21": 68.85, "22": 396.04, "29": 11.98, "30": 505.02}, "pixReceipts": [{"nome": "Juliana Arvoredo", "valor": 285.0, "data": "2026-09-01 00:00:00"}, {"nome": "Mulher Arvoredo", "valor": 607.32, "data": "2026-09-08 00:00:00"}, {"nome": "Marceliny Aroeira", "valor": 140.0, "data": "2026-09-15 00:00:00"}, {"nome": "Rebeca Work", "valor": 227.84, "data": "2026-09-24 00:00:00"}], "pixAviso": null}};
+
+  function cv(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function fmtBRL(v){ if (v==null||isNaN(v)) return "—"; return "R$ " + v.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function fmtPct(v){ if (v==null||isNaN(v)) return "—"; return (v*100).toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1}) + "%"; }
+  function kfmt(v){ if (Math.abs(v)>=1000) return (v/1000).toLocaleString("pt-BR",{maximumFractionDigits:1})+"k"; return v.toLocaleString("pt-BR",{maximumFractionDigits:0}); }
+
+  function svgEl(tag, attrs){
+    var el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (var k in attrs) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+  function niceMax(v){
+    if (v<=0) return 10;
+    var mag = Math.pow(10, Math.floor(Math.log10(v)));
+    var n = v/mag;
+    var step = n<=1?1:n<=2?2:n<=5?5:10;
+    return step*mag;
+  }
+
+  function ensureTooltip(){
+    var tt = document.getElementById("chartTooltip");
+    if (!tt){ tt = document.createElement("div"); tt.id="chartTooltip"; tt.className="chart-tooltip"; tt.hidden=true; document.body.appendChild(tt); }
+    return tt;
+  }
+  function posTooltip(evt, tt){
+    var pad=12, x=evt.clientX+pad, y=evt.clientY+pad;
+    var vw=window.innerWidth||1000, vh=window.innerHeight||800;
+    var r=tt.getBoundingClientRect();
+    if (x+r.width>vw-8) x=evt.clientX-r.width-pad;
+    if (y+r.height>vh-8) y=evt.clientY-r.height-pad;
+    tt.style.left=Math.max(4,x)+"px"; tt.style.top=Math.max(4,y)+"px";
+  }
+  function showTT(evt,lbl,val){
+    var tt=ensureTooltip();
+    tt.innerHTML='<div class="tt-lbl"></div><div class="tt-val"></div>';
+    tt.querySelector(".tt-lbl").textContent=lbl;
+    tt.querySelector(".tt-val").textContent=val;
+    tt.hidden=false; posTooltip(evt,tt);
+  }
+  function hideTT(){ var tt=document.getElementById("chartTooltip"); if(tt) tt.hidden=true; }
+
+  var W=900, H=320, PAD={t:14,r:60,b:34,l:60};
+
+  function drawGrid(svg, yMaxL){
+    var innerW=W-PAD.l-PAD.r, innerH=H-PAD.t-PAD.b;
+    for (var i=0;i<=5;i++){
+      var y=PAD.t+innerH-(innerH*i/5);
+      svg.appendChild(svgEl("line",{x1:PAD.l,x2:W-PAD.r,y1:y,y2:y,class:"gridline"}));
+      var lbl=svgEl("text",{x:PAD.l-8,y:y+3,class:"axis-label","text-anchor":"end"});
+      lbl.textContent=kfmt(yMaxL*i/5);
+      svg.appendChild(lbl);
+    }
+    svg.appendChild(svgEl("line",{x1:PAD.l,x2:W-PAD.r,y1:PAD.t+innerH,y2:PAD.t+innerH,class:"baseline"}));
+  }
+
+  function chartHistorico(){
+    var svg=document.getElementById("chartHist");
+    svg.innerHTML="";
+    var meses=DATA.historico;
+    document.getElementById("histSub").textContent = meses.length + " meses (" + meses[0].label + " – " + meses[meses.length-1].label + ")";
+    var innerW=W-PAD.l-PAD.r, innerH=H-PAD.t-PAD.b;
+    var maxL = niceMax(Math.max.apply(null, meses.map(function(m){return Math.max(m.furoBrutoTotal,m.recuperadoTotal);}).concat([1])));
+    drawGrid(svg, maxL);
+
+    // eixo direito: % recuperado, 0-100% em degraus de 20%, estendido se necessario
+    var maxPct = Math.max.apply(null, meses.map(function(m){return m.pctRecuperado||0;}).concat([1]));
+    var maxRightPct = 1;
+    while (maxRightPct < maxPct) maxRightPct += 0.2;
+    for (var i=0;i<=(maxRightPct/0.2);i++){
+      var frac = (i*0.2)/maxRightPct;
+      var y = PAD.t+innerH-innerH*frac;
+      var lbl=svgEl("text",{x:W-PAD.r+8,y:y+3,class:"axis-label"});
+      lbl.textContent = Math.round(i*20)+"%";
+      svg.appendChild(lbl);
+    }
+
+    var bw = innerW/meses.length;
+    var xTicksCandidatos=[];
+    meses.forEach(function(m,i){
+      if (i%6===0 || i===meses.length-1) xTicksCandidatos.push({x:PAD.l+bw*i+bw/2, label:m.label});
+      var xg = PAD.l+bw*i+bw*0.12, wg=bw*0.34;
+      var hFuro = innerH*(m.furoBrutoTotal/maxL);
+      var rFuro = svgEl("rect",{x:xg,y:PAD.t+innerH-hFuro,width:wg,height:Math.max(hFuro,1),rx:2,fill:cv("--s1"),cursor:"pointer"});
+      rFuro.addEventListener("mouseenter", function(evt){ showTT(evt, m.label, "Furo Bruto: "+fmtBRL(m.furoBrutoTotal)); });
+      rFuro.addEventListener("mousemove", function(evt){ posTooltip(evt, ensureTooltip()); });
+      rFuro.addEventListener("mouseleave", hideTT);
+      svg.appendChild(rFuro);
+
+      var xr = xg+wg+bw*0.04;
+      var hRec = innerH*(m.recuperadoTotal/maxL);
+      var rRec = svgEl("rect",{x:xr,y:PAD.t+innerH-hRec,width:wg,height:Math.max(hRec,1),rx:2,fill:cv("--s2"),cursor:"pointer"});
+      rRec.addEventListener("mouseenter", function(evt){ showTT(evt, m.label, "Recuperado: "+fmtBRL(m.recuperadoTotal)+" ("+fmtPct(m.pctRecuperado)+")"); });
+      rRec.addEventListener("mousemove", function(evt){ posTooltip(evt, ensureTooltip()); });
+      rRec.addEventListener("mouseleave", hideTT);
+      svg.appendChild(rRec);
+    });
+    // filtra candidatos muito perto do ultimo rotulo (que pode ser mais
+    // largo, ex. "set/26 (parcial)") pra evitar sobreposicao visual -
+    // distancia minima aproximada pelo tamanho do texto (~7px por char).
+    var ultimo = xTicksCandidatos[xTicksCandidatos.length-1];
+    var minDist = 14 + ultimo.label.length*3.5;
+    var xTicks = xTicksCandidatos.filter(function(t,idx){
+      return idx===xTicksCandidatos.length-1 || Math.abs(ultimo.x - t.x) >= minDist;
+    });
+    xTicks.forEach(function(t){
+      var lbl=svgEl("text",{x:t.x,y:H-10,class:"axis-label","text-anchor":"middle"});
+      lbl.textContent=t.label;
+      svg.appendChild(lbl);
+    });
+
+    var pathD="";
+    meses.forEach(function(m,i){
+      var x=PAD.l+bw*i+bw/2;
+      var frac=(m.pctRecuperado||0)/maxRightPct;
+      var y=PAD.t+innerH-innerH*frac;
+      pathD += (i===0?"M":"L") + x.toFixed(1)+","+y.toFixed(1)+" ";
+    });
+    svg.appendChild(svgEl("path",{d:pathD, fill:"none", stroke:cv("--s3"), "stroke-width":2.5, "stroke-linejoin":"round"}));
+  }
+
+  function chartAtual(){
+    var svg=document.getElementById("chartCur");
+    svg.innerHTML="";
+    var mc=DATA.mesAtual;
+    if (!mc){ return; }
+    document.getElementById("curSub").textContent = mc.label + " · " + mc.diasNoMes + " dias · até dia " + mc.throughDay;
+    var dias=[]; for (var d=1; d<=mc.diasNoMes; d++) dias.push(d);
+    var innerW=W-PAD.l-PAD.r, innerH=H-PAD.t-PAD.b;
+    var maxL = niceMax(Math.max.apply(null, dias.map(function(d){return Math.max(mc.dailyFuroBruto[d]||0, mc.dailyRecuperado[d]||0);}).concat([1])));
+    drawGrid(svg, maxL);
+
+    var acumFuro=0, acumRec=0;
+    dias.forEach(function(d){ if (d<=mc.throughDay){ acumFuro+=(mc.dailyFuroBruto[d]||0); acumRec+=(mc.dailyRecuperado[d]||0); } });
+    var maxRight = niceMax(Math.max(acumFuro, acumRec, 1));
+    for (var i=0;i<=5;i++){
+      var y = PAD.t+innerH-(innerH*i/5);
+      var lbl=svgEl("text",{x:W-PAD.r+8,y:y+3,class:"axis-label"});
+      lbl.textContent = kfmt(maxRight*i/5);
+      svg.appendChild(lbl);
+    }
+
+    var nCols = dias.length + 1.6; // +1.6 pra reservar espaco pro divisor + coluna Acumulado
+    var bw = innerW/nCols;
+    var xTicks=[];
+    dias.forEach(function(d,i){
+      var isFuture = d > mc.throughDay;
+      if (d%5===0 || d===dias.length) xTicks.push({x:PAD.l+bw*i+bw/2, label:String(d)});
+      var xg=PAD.l+bw*i+bw*0.1, wg=bw*0.36;
+      var op = isFuture ? 0.25 : 1;
+      var hFuro = innerH*((mc.dailyFuroBruto[d]||0)/maxL);
+      var rFuro=svgEl("rect",{x:xg,y:PAD.t+innerH-hFuro,width:wg,height:Math.max(hFuro,isFuture?0:1),rx:2,fill:cv("--s1"),opacity:op,cursor:isFuture?"default":"pointer"});
+      if (!isFuture){
+        rFuro.addEventListener("mouseenter", function(evt){ showTT(evt, "Dia "+d, "Furo Bruto: "+fmtBRL(mc.dailyFuroBruto[d]||0)); });
+        rFuro.addEventListener("mousemove", function(evt){ posTooltip(evt, ensureTooltip()); });
+        rFuro.addEventListener("mouseleave", hideTT);
+      }
+      svg.appendChild(rFuro);
+      var xr=xg+wg+bw*0.04;
+      var hRec = innerH*((mc.dailyRecuperado[d]||0)/maxL);
+      var rRec=svgEl("rect",{x:xr,y:PAD.t+innerH-hRec,width:wg,height:Math.max(hRec,isFuture?0:1),rx:2,fill:cv("--s2"),opacity:op,cursor:isFuture?"default":"pointer"});
+      if (!isFuture){
+        rRec.addEventListener("mouseenter", function(evt){ showTT(evt, "Dia "+d, "Recuperado: "+fmtBRL(mc.dailyRecuperado[d]||0)); });
+        rRec.addEventListener("mousemove", function(evt){ posTooltip(evt, ensureTooltip()); });
+        rRec.addEventListener("mouseleave", hideTT);
+      }
+      svg.appendChild(rRec);
+    });
+    xTicks.forEach(function(t){
+      var lbl=svgEl("text",{x:t.x,y:H-10,class:"axis-label","text-anchor":"middle"});
+      lbl.textContent=t.label;
+      svg.appendChild(lbl);
+    });
+
+    var xDiv = PAD.l + bw*dias.length + bw*0.25;
+    svg.appendChild(svgEl("line",{x1:xDiv,x2:xDiv,y1:PAD.t,y2:PAD.t+innerH,class:"divider"}));
+
+    var xAc = xDiv + bw*0.3;
+    var wAc = bw*0.5;
+    var hAcFuro = innerH*(acumFuro/maxRight);
+    var rAcFuro=svgEl("rect",{x:xAc,y:PAD.t+innerH-hAcFuro,width:wAc,height:Math.max(hAcFuro,1),rx:2,fill:cv("--s1"),cursor:"pointer"});
+    rAcFuro.addEventListener("mouseenter", function(evt){ showTT(evt,"Acumulado","Furo Bruto: "+fmtBRL(acumFuro)); });
+    rAcFuro.addEventListener("mousemove", function(evt){ posTooltip(evt, ensureTooltip()); });
+    rAcFuro.addEventListener("mouseleave", hideTT);
+    svg.appendChild(rAcFuro);
+    var xAc2 = xAc + wAc + bw*0.08;
+    var hAcRec = innerH*(acumRec/maxRight);
+    var rAcRec=svgEl("rect",{x:xAc2,y:PAD.t+innerH-hAcRec,width:wAc,height:Math.max(hAcRec,1),rx:2,fill:cv("--s3"),cursor:"pointer"});
+    rAcRec.addEventListener("mouseenter", function(evt){ showTT(evt,"Acumulado","Recuperado: "+fmtBRL(acumRec)+" ("+fmtPct(acumFuro?acumRec/acumFuro:0)+")"); });
+    rAcRec.addEventListener("mousemove", function(evt){ posTooltip(evt, ensureTooltip()); });
+    rAcRec.addEventListener("mouseleave", hideTT);
+    svg.appendChild(rAcRec);
+    var lblAc=svgEl("text",{x:(xAc+xAc2+wAc)/2,y:H-10,class:"axis-label","text-anchor":"middle"});
+    lblAc.textContent="Acum.";
+    svg.appendChild(lblAc);
+  }
+
+  function renderPix(){
+    var body=document.getElementById("pixBody");
+    body.innerHTML="";
+    var mc=DATA.mesAtual;
+    var itens = (mc && mc.pixReceipts) || [];
+    itens.forEach(function(it){
+      var tr=document.createElement("tr");
+      var tdN=document.createElement("td"); tdN.textContent=it.nome; tr.appendChild(tdN);
+      var tdV=document.createElement("td"); tdV.className="val"; tdV.textContent=fmtBRL(it.valor); tr.appendChild(tdV);
+      var tdD=document.createElement("td"); tdD.textContent=it.data; tr.appendChild(tdD);
+      body.appendChild(tr);
+    });
+    var total = itens.reduce(function(s,i){return s+(+i.valor||0);},0);
+    document.getElementById("pixTotal").textContent = fmtBRL(total);
+    var avisoEl = document.getElementById("pixAviso");
+    if (mc && mc.pixAviso){ avisoEl.hidden=false; avisoEl.textContent=mc.pixAviso; }
+  }
+
+  chartHistorico();
+  chartAtual();
+  renderPix();
+})();
+</script>
+</body></html>
